@@ -19,7 +19,7 @@ public class TripCount {
 		return date;
 	}
 	
-	public long numTrips() {
+	public long getNumTrips() {
 		return numTrips;
 	}
 
