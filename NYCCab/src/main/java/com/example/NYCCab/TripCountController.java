@@ -68,37 +68,44 @@ public class TripCountController {
 		
 		// Query database and append counts for each medallion.
 		// If medallion not found, count = 0.
-		String url = "jdbc:mysql://localhost:3306/nyccab?serverTimezone=Australia/Sydney&useLegacyDatetimeCode=false";
-		String username = "root";
-		String password = "rootroot";
-		
 		System.out.println("Connecting database...");
-		ArrayList<TripCount> tc = new ArrayList<TripCount>();
+		ArrayList<TripCount> tripCounts = new ArrayList<TripCount>();
 		for (String medallion : medallions) {
-			String query = String.format(
-					"SELECT COUNT(*) FROM cab_trip_data WHERE medallion = '%s' AND DATE(pickup_datetime) = '%s';",
-					medallion,
-					date);
-			try (
-				// conn, stmt, result will autoclose.
-				Connection conn = DriverManager.getConnection(url, username, password);
-				Statement stmt = conn.createStatement();
-				ResultSet result = stmt.executeQuery(query);
-					
-			) {
-				System.out.println("Database connected!");
-				if (result.next()) {
-					long count = result.getInt("COUNT(*)");
-					tc.add(new TripCount(medallion, date, count));
-				} else {
-					tc.add(new TripCount(medallion, date, 0L));
-				}
-			} catch (SQLException e) {
-			    throw new IllegalStateException("Cannot connect to database!", e);
-			}
+			tripCounts.add(countTrips(medallion, date));
 		}
 		
 		
+		return tripCounts;
+	}
+	
+	private TripCount countTrips(String medallion, String date) {
+		
+		String url = "jdbc:mysql://localhost:3306/nyccab?serverTimezone=Australia/Sydney&useLegacyDatetimeCode=false";
+		String username = "root";
+		String password = "rootroot";
+		String query = String.format(
+				"SELECT COUNT(*) FROM cab_trip_data WHERE medallion = '%s' AND DATE(pickup_datetime) = '%s';",
+				medallion,
+				date);
+		TripCount tc;
+		try (
+			// conn, stmt, result will autoclose.
+			Connection conn = DriverManager.getConnection(url, username, password);
+			Statement stmt = conn.createStatement();
+			ResultSet result = stmt.executeQuery(query);
+				
+		) {
+			System.out.println("Database connected!");
+			if (result.next()) {
+				long count = result.getInt("COUNT(*)");
+				tc = new TripCount(medallion, date, count);
+			} else {
+				tc = new TripCount(medallion, date, 0L);
+			}
+		} catch (SQLException e) {
+		    throw new IllegalStateException("Cannot connect to database!", e);
+		}
 		return tc;
 	}
+	
 }
