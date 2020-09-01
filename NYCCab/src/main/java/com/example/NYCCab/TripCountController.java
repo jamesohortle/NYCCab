@@ -56,13 +56,11 @@ public class TripCountController {
 		// Validate date.
 		// For now, accept only yyyy-mm-dd, like database.
 		// Accept only one date.
-		System.out.println(date);
 		Pattern datePattern = Pattern.compile("\\d{4}-[01]\\d-[0-3]\\d");
 		Matcher dateMatch = datePattern.matcher(date);
 		if (!dateMatch.matches()) {
-			throw new Exception("Not a valid date.");
+			throw new DateException("Not a valid date.");
 		}
-		
 		System.out.println(String.format("Date to query: %s.", date));
 		
 		
