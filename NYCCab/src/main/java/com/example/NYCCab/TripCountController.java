@@ -1,10 +1,13 @@
 package com.example.NYCCab;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.sql.*;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 @RestController
 public class TripCountController {
@@ -25,18 +28,20 @@ public class TripCountController {
 			Long.parseUnsignedLong(medallion.substring(16), 16);	
 		} catch (NumberFormatException ex) {
 			ex.printStackTrace();
-			return null;
+			return new TripCount("", "", 0L);
 		}
 		
-//		System.out.println("Loading driver...");
-//		try {
-//		    Class.forName("com.mysql.jdbc.Driver");
-//		    System.out.println("Driver loaded!");
-//		} catch (ClassNotFoundException e) {
-//		    throw new IllegalStateException("Cannot find the driver in the classpath!", e);
-//		}
+		// Validate date.
+		// For now, accept only yyyy-mm-dd, like database.
+		assert(date.length() == 10);
+		Pattern datePattern = Pattern.compile("\\d{4}-[01]\\d-[0-3]\\d");
+		Matcher dateMatch = datePattern.matcher(date);
+		if (!dateMatch.matches()) {
+			return new TripCount("", "", 0L);
+		}
 		
 		
+		// Query database.
 		String url = "jdbc:mysql://localhost:3306/nyccab?serverTimezone=Australia/Sydney&useLegacyDatetimeCode=false";
 		String username = "root";
 		String password = "rootroot";
@@ -47,18 +52,21 @@ public class TripCountController {
 		    System.out.println("Database connected!");
 		    Statement stmt = connection.createStatement();
 			String query = String.format(
-					"SELECT * FROM cab_trip_data WHERE medallion = '%s';",
-					medallion);
+					"SELECT COUNT(*) FROM cab_trip_data WHERE medallion = '%s' AND DATE(pickup_datetime) = '%s';",
+					medallion,
+					date);
 			ResultSet result = stmt.executeQuery(query);
-			while (result.next()) {
-				System.out.println(result.getString("medallion"));
+			if (result.next()) {
+				long count = result.getInt("COUNT(*)");
+				return new TripCount(medallion, date, count);
+			} else {
+				
 			}
 		} catch (SQLException e) {
 		    throw new IllegalStateException("Cannot connect the database!", e);
 		}
 		
 		
-		
-		return new TripCount(0L, 0L, 0L);
+		return new TripCount("", "", 0L);
 	}
 }
