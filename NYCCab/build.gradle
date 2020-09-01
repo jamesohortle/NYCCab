@@ -19,8 +19,8 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	
-	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+	// MySQL Connector: https://search.maven.org/artifact/mysql/mysql-connector-java/8.0.21/jar
+	implementation 'mysql:mysql-connector-java:8.0.21'	
 	
 	// https://spring.io/guides/gs/relational-data-access/
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
