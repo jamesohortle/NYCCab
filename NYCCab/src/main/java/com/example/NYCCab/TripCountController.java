@@ -1,5 +1,7 @@
 package com.example.NYCCab;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +14,11 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+@EnableCaching
 @RestController
 public class TripCountController {
 	
+	@Cacheable("tripcounts")
 	@GetMapping("/tripCount")
 	public ArrayList<TripCount> tripCount(
 			@RequestParam(value = "medallion", required = true) String[] medallions,
