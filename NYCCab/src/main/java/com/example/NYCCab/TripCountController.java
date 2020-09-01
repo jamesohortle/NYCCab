@@ -1,7 +1,9 @@
 package com.example.NYCCab;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +13,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -18,12 +21,23 @@ import java.util.regex.Matcher;
 @RestController
 public class TripCountController {
 	
-	@Cacheable("tripcounts")
-	@GetMapping("/tripCount")
-	public ArrayList<TripCount> tripCount(
+	@GetMapping(value = "/tripCount")
+	public @ResponseBody ArrayList<TripCount> tripCount(
 			@RequestParam(value = "medallion", required = true) String[] medallions,
-			@RequestParam(value = "date", required = false) String date
+			@RequestParam(value = "date", required = false) String date,
+			@RequestParam(value = "cache", required = false, defaultValue = "true") String cache
 	) throws Exception {
+		
+		// Evict cache if needed (function called in loop below).
+		Boolean keepCache;
+		if (Objects.equals(cache, "true")) {
+			keepCache = true;
+		} else if (Objects.equals(cache, "false")) {
+			keepCache = false;
+		} else {
+			throw new Exception("Cache parameter invalid.");
+		}
+		
 		// Validate medallions.
 		// A medallion is a hexadecimal value with 32 digits.
 		// Therefore, in range 0 to 0xFFF...FFF (32 long).
@@ -48,6 +62,10 @@ public class TripCountController {
 			}
 		}
 		
+		// Check any valid medallions before continuing.
+		if (validMedallions.isEmpty()) {
+			throw new MedallionException("No valid medallions found in query.");
+		}
 		System.out.println("Valid medallions are:");
 		for (String medallion : validMedallions) {
 			System.out.println(medallion);
@@ -69,13 +87,16 @@ public class TripCountController {
 		System.out.println("Connecting database...");
 		ArrayList<TripCount> tripCounts = new ArrayList<TripCount>();
 		for (String medallion : medallions) {
+			// Evict tripcounts cache now that medallions and date validated.
+			if (!keepCache) evictTripCountsCache(medallion, date);
+			
 			tripCounts.add(countTrips(medallion, date));
 		}
-		
 		
 		return tripCounts;
 	}
 	
+	@Cacheable(value = "tripcounts", key="{#medallion, #date}")
 	private TripCount countTrips(String medallion, String date) {
 		
 		String url = "jdbc:mysql://localhost:3306/***REMOVED***?serverTimezone=Australia/Sydney&useLegacyDatetimeCode=false";
@@ -105,5 +126,9 @@ public class TripCountController {
 		}
 		return tc;
 	}
+	
+	
+	@CacheEvict(value = "tripcounts", key="{#medallion, #date}")
+	private void evictTripCountsCache(String medallion, String date) {}
 	
 }
