@@ -42,11 +42,26 @@ parser.add_argument(
     "--clear_cache",
     "-cc",
     action="store_true",
-    help="Tell the server to clear its cache. Cache will be cleared before other results are calculated.",
+    help="Tell the server to clear its cache. If specified, request to clear cache will be sent before other results are calculated and received (two total requests).",
     required=False,
 )
 
 args = parser.parse_args()
+
+## Clear cache.
+if args.clear_cache:
+    endpoint = "http://localhost:8080/clearCache"
+    r = requests.get(endpoint)
+    if not r.status_code == 200:
+        print(
+            "\033[93m"  # Set terminal color.
+            "#############################################\n"
+            f"# Warning! Cache clear failed (status {r.status_code}). #\n"
+            "# The following results may be from cache.  #\n"
+            "#############################################\n"
+            "\033[0m"  # Revert terminal color.
+        )
+
 
 ## Validate medallion as 32-digit hex number.
 validMedallionPattern = re.compile(r"[0-9A-F]{32}", flags=re.IGNORECASE)
@@ -80,18 +95,12 @@ def validateDate(date: str) -> bool:
 if not validateDate(args.date):
     quit("Date not valid.")
 
-## Check and format cache parameters.
+## Check and format cache parameter.
 cacheParam = "false" if args.no_cache else "true"
-clearCacheParam = "true" if args.clear_cache else "false"
 
 ## Make request.
 endpoint = "http://localhost:8080/tripCount"
-payload = {
-    "date": args.date,
-    "medallion": args.medallions,
-    "cache": cacheParam,
-    "clear_cache": clearCacheParam,
-}
+payload = {"date": args.date, "medallion": args.medallions, "cache": cacheParam}
 
 r = requests.get(endpoint, params=payload)
 print(r.url)
