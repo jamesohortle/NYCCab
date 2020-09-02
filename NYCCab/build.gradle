@@ -9,6 +9,12 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '14'
 
+processResources {
+    filesMatching("**/*.properties") {
+        expand project.properties
+    }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -36,7 +42,8 @@ dependencies {
 	}
 	
 	// Jaspyt: https://search.maven.org/classic/#artifactdetails%7Ccom.github.ulisesbocchio%7Cjasypt-spring-boot-starter%7C3.0.3%7Cjar
-	compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+	
 	
 }
 
