@@ -27,12 +27,27 @@ parser.add_argument(
     "-d",
     metavar="d",
     type=str,
-    help="Date to filter by. Only one date accepted. Only acceptable format for now is yyyy-mm-dd (ISO format). Defaults to today's date in your device's timezone.",
+    help="Date to filter by. Only one date accepted. Only acceptable format for now is yyyy-mm-dd (ISO format). If unspecified, defaults to today's date in your device's timezone.",
     default=date.today().isoformat(),
+    required=False,
+)
+parser.add_argument(
+    "--no_cache",
+    "-nc",
+    action="store_true",
+    help="Tell the server to return uncached, fresh results. If flag not present, results are cached by default. No arguments accepted to this flag.",
+    required=False,
+)
+parser.add_argument(
+    "--clear_cache",
+    "-cc",
+    action="store_true",
+    help="Tell the server to clear its cache. Cache will be cleared before other results are calculated.",
     required=False,
 )
 
 args = parser.parse_args()
+
 ## Validate medallion as 32-digit hex number.
 validMedallionPattern = re.compile(r"[0-9A-F]{32}", flags=re.IGNORECASE)
 
@@ -65,12 +80,21 @@ def validateDate(date: str) -> bool:
 if not validateDate(args.date):
     quit("Date not valid.")
 
+## Check and format cache parameters.
+cacheParam = "false" if args.no_cache else "true"
+clearCacheParam = "true" if args.clear_cache else "false"
+
 ## Make request.
 endpoint = "http://localhost:8080/tripCount"
-payload = {"date": args.date, "medallion": args.medallions}
+payload = {
+    "date": args.date,
+    "medallion": args.medallions,
+    "cache": cacheParam,
+    "clear_cache": clearCacheParam,
+}
 
 r = requests.get(endpoint, params=payload)
-
+print(r.url)
 
 ## Format and exit.
 def formatPrintResponse(r: requests.Response) -> None:
