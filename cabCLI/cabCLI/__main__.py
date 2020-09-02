@@ -14,12 +14,13 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument(
     "--medallions",
+    "--medallion",
     "-m",
     metavar="m",
     type=str,
     nargs="+",
     action="extend",
-    help="Medallion to check as strings. Each medallion is a 32-digit hexadecimal value without the 0x prefix. Multiple medallions accepted with each -m flag.",
+    help="Medallion(s) to check as string(s). Each medallion is a 32-digit hexadecimal value without the 0x prefix. Multiple medallions accepted with each -m flag.",
     required=True,
 )
 parser.add_argument(
@@ -35,14 +36,14 @@ parser.add_argument(
     "--no_cache",
     "-nc",
     action="store_true",
-    help="Tell the server to return uncached, fresh results. If flag not present, results are cached by default. No arguments accepted to this flag.",
+    help="Tell the server to return uncached, fresh results. If flag not present, results are cached by default. No arguments accepted.",
     required=False,
 )
 parser.add_argument(
     "--clear_cache",
     "-cc",
     action="store_true",
-    help="Tell the server to clear its cache. If specified, request to clear cache will be sent before other results are calculated and received (two total requests).",
+    help="Tell the server to clear its cache. If specified, request to clear cache will be sent before other results are calculated and received (two total requests). No arguments accepted.",
     required=False,
 )
 
