@@ -3,3 +3,4 @@
 cabCLI/build
 >>>>>>> cli
 cabCLI/dist
+*.pyc
