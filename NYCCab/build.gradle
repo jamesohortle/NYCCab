@@ -22,18 +22,21 @@ dependencies {
 	// MySQL Connector: https://search.maven.org/artifact/mysql/mysql-connector-java/8.0.21/jar
 	implementation 'mysql:mysql-connector-java:8.0.21'	
 	
-	// https://spring.io/guides/gs/relational-data-access/
+	// JDBC: https://spring.io/guides/gs/relational-data-access/
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	
-	// https://spring.io/guides/gs/caching/
+	// Caching: https://spring.io/guides/gs/caching/
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	
+	// Jaspyt: https://search.maven.org/classic/#artifactdetails%7Ccom.github.ulisesbocchio%7Cjasypt-spring-boot-starter%7C3.0.3%7Cjar
+	compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
 	
 }
 
