@@ -21,7 +21,7 @@ parser.add_argument(
     nargs="+",
     action="extend",
     help="Medallion(s) to check as string(s). Each medallion is a 32-digit hexadecimal value without the 0x prefix. Multiple medallions accepted with each -m flag.",
-    required=True,
+    required=False,
 )
 parser.add_argument(
     "--date",
@@ -62,6 +62,12 @@ if args.clear_cache:
             "#############################################\n"
             "\033[0m"  # Revert terminal color.
         )
+    else:
+        print("\033[92mCache clear request succeeded!\033[0m")
+        if args.medallions is None:
+            quit(
+                "\033[93mCache clear request succeeded but no medallions specified.\033[0m"
+            )
 
 
 ## Validate medallion as 32-digit hex number.
@@ -80,7 +86,7 @@ def validateMedallions(medallion: str) -> bool:
 validMedallions = list(map(str.upper, filter(validateMedallions, args.medallions)))
 
 if not validMedallions:
-    quit("No valid medallions.")
+    quit("\033[91mNo valid medallions.\033[0m")
 
 
 ## Validate in yyyy-mm-dd pattern.
@@ -94,7 +100,7 @@ def validateDate(date: str) -> bool:
 
 
 if not validateDate(args.date):
-    quit("Date not valid.")
+    quit("\033[91mDate not valid.\033[0m")
 
 ## Check and format cache parameter.
 cacheParam = "false" if args.no_cache else "true"
@@ -104,7 +110,6 @@ endpoint = "http://localhost:8080/tripCount"
 payload = {"date": args.date, "medallion": args.medallions, "cache": cacheParam}
 
 r = requests.get(endpoint, params=payload)
-print(r.url)
 
 ## Format and exit.
 def formatPrintResponse(r: requests.Response) -> None:
