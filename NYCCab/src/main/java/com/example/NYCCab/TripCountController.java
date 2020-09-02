@@ -21,6 +21,14 @@ import java.util.regex.Matcher;
 @RestController
 public class TripCountController {
 	
+	@GetMapping(value = "/clearCache")
+	public @ResponseBody Boolean clearCache() {
+		// TODO: prevent this method being called too often by users.
+		// Not good to keep deleting the entire cache.
+		evictAllTripCountsCache();
+		return true;
+	}
+	
 	@GetMapping(value = "/tripCount")
 	public @ResponseBody ArrayList<TripCount> tripCount(
 			@RequestParam(value = "medallion", required = true) String[] medallions,
@@ -121,12 +129,14 @@ public class TripCountController {
 			} else {
 				tc = new TripCount(medallion, date, 0L);
 			}
-		} catch (SQLException e) {
-		    throw new IllegalStateException("Cannot connect to database!", e);
+		} catch (SQLException ex) {
+		    throw new IllegalStateException("Cannot connect to database!", ex);
 		}
 		return tc;
 	}
 	
+	@CacheEvict(value = "tripcounts", allEntries = true)
+	private void evictAllTripCountsCache() {}
 	
 	@CacheEvict(value = "tripcounts", key="{#medallion, #date}")
 	private void evictTripCountsCache(String medallion, String date) {}
