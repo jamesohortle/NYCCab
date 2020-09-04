@@ -12,9 +12,13 @@ import java.util.regex.Matcher;
 
 @RestController
 public class TripCountController {
+
 	@Autowired
 	TripCalculator tripCalculator;
 
+	/**
+	 * Clear the entire cache for every user.
+	 */
 	@GetMapping(value = "/clearCache")
 	public @ResponseBody Boolean clearCache() {
 		// TODO: prevent this method being called too often by users.
@@ -23,6 +27,10 @@ public class TripCountController {
 		return true;
 	}
 
+	/**
+	 * Fulfill GET request number of trips by medallion(s) on date. Bypass the cache
+	 * by setting cache = false.
+	 */
 	@GetMapping(value = "/tripCount")
 	public @ResponseBody ArrayList<TripCount> tripCount(
 			@RequestParam(value = "medallion", required = true) String[] medallions,
@@ -63,7 +71,7 @@ public class TripCountController {
 			}
 		}
 
-		// Check any valid medallions before continuing.
+		// Check if any valid medallions before continuing.
 		if (validMedallions.isEmpty()) {
 			throw new MedallionException("No valid medallions found in query.");
 		}
@@ -86,13 +94,7 @@ public class TripCountController {
 		// If medallion not found, count = 0.
 		ArrayList<TripCount> tripCounts = new ArrayList<TripCount>();
 		for (String medallion : medallions) {
-			// Evict tripcounts cache if needed now that medallions and date validated.
-			if (!keepCache) {
-				System.out.println("Cache will be evicted...");
-				tripCalculator.evictTripCountsCache(medallion, date);
-			}
-
-			tripCounts.add(tripCalculator.countTrips(medallion, date));
+			tripCounts.add(tripCalculator.countTrips(medallion, date, keepCache));
 		}
 
 		return tripCounts;
