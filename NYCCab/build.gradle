@@ -9,6 +9,12 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '14'
 
+processResources {
+    filesMatching("**/*.properties") {
+        expand project.properties
+    }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -22,14 +28,14 @@ dependencies {
 	// MySQL Connector: https://search.maven.org/artifact/mysql/mysql-connector-java/8.0.21/jar
 	implementation 'mysql:mysql-connector-java:8.0.21'	
 	
-	// https://spring.io/guides/gs/relational-data-access/
+	// JDBC: https://spring.io/guides/gs/relational-data-access/
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	
-	// https://spring.io/guides/gs/caching/
+	// Caching: https://spring.io/guides/gs/caching/
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -40,6 +46,9 @@ dependencies {
 	
 	// Javax Cache API: https://search.maven.org/artifact/javax.cache/cache-api/1.1.1/jar	
 	implementation 'javax.cache:cache-api:1.1.1'
+	// Jaspyt: https://search.maven.org/artifact/com.github.ulisesbocchio/jasypt-spring-boot/3.0.3/jar
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot:3.0.3'
+	
 }
 
 test {
