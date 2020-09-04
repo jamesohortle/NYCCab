@@ -10,16 +10,16 @@ For ease's sake, I've put passwords etc in plaintext here. They are also in the 
 
 ## Set up the database
 1. Install MySQL 8.0.21.
-1. Create a database called `***REMOVED***` as user `***REMOVED***` with password `***REMOVED******REMOVED***`.
+1. Create a database called `nyccab` as user `root` with password `rootroot`.
 1. Import the SQL file. The table will be called `nyc_cab_trip_data`.
 
 ## Build and run the server
 1. Navigate to `./NYCCab/`.
 1. Export environment variables:
 ```
-export JASYPT_ENCRYPTOR_PASSWORD=***REMOVED***
-export JASYPT_ENCRYPTOR_ALGORITHM=***REMOVED***
-export JASYPT_ENCRYPTOR_IV_GENERATOR_CLASSNAME=***REMOVED***
+export JASYPT_ENCRYPTOR_PASSWORD=jamesohortle
+export JASYPT_ENCRYPTOR_ALGORITHM=PBEWithMD5AndDES
+export JASYPT_ENCRYPTOR_IV_GENERATOR_CLASSNAME=org.jasypt.iv.NoIvGenerator
 ```
 Jasypt will read from the environment variables to decrypt database passwords etc.
 
