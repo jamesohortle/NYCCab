@@ -4,11 +4,12 @@
         <key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
         <value-type>com.example.NYCCab.TripCount</value-type>
         <expiry>
-            <!-- Should cache really be set to none? -->
+            <!-- Should expiry really be set to none? -->
+            <!-- <ttl unit="seconds">20</ttl> -->
             <none/>
         </expiry>
         <resources>
-            <heap unit="kB">10</heap>
+            <heap unit="entries">10000</heap>
         </resources>
     </cache>
 </config>
