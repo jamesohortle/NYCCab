@@ -15,11 +15,11 @@ setuptools.setup(
     name="cabCLI",
     version="0.1",
     author="James O Hortle",
-    author_email="***REMOVED***@gmail.com",
+    author_email="jamesohortle@gmail.com",
     description="CLI to access NYC cab data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/***REMOVED***/NYCCab",
+    url="https://github.com/jamesohortle/NYCCab",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
