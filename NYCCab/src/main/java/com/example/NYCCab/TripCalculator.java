@@ -14,6 +14,7 @@ import java.sql.SQLException;
 @Service
 public class TripCalculator {
 
+	// Get values from application.properties.
 	@Value("${spring.data.mysql.database.url}")
 	private String url;
 	@Value("${spring.data.mysql.database.user}")
@@ -66,13 +67,19 @@ public class TripCalculator {
 		return tc;
 	}
 
+	/**
+	 * Evict every entry from the cache.
+	 */
 	@CacheEvict(value = "tripcounts", allEntries = true)
 	public void evictAllTripCountsCache() {
 		System.out.println("Entire cache evicted!");
 	}
 
+	/**
+	 * Evict a medallion-date pair from the cache.
+	 */
 	@CacheEvict(value = "tripcounts", key = "{#medallion, #date}")
-	public void evictTripCountsCache(String medallion, String date) {
+	private void evictTripCountsCache(String medallion, String date) {
 		System.out.println(String.format("Cache item (%s, %s) evicted!", medallion, date));
 	}
 
