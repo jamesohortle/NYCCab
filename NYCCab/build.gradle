@@ -9,12 +9,6 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '14'
 
-processResources {
-    filesMatching("**/*.properties") {
-        expand project.properties
-    }
-}
-
 repositories {
 	mavenCentral()
 }
@@ -34,21 +28,15 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	
-	// Caching: https://spring.io/guides/gs/caching/
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	
-	// EhCache: https://search.maven.org/artifact/org.ehcache/ehcache/3.9.0/jar
-	implementation 'org.ehcache:ehcache:3.9.0'	
-	
-	// Javax Cache API: https://search.maven.org/artifact/javax.cache/cache-api/1.1.1/jar	
-	implementation 'javax.cache:cache-api:1.1.1'
+
 	// Jaspyt: https://search.maven.org/artifact/com.github.ulisesbocchio/jasypt-spring-boot/3.0.3/jar
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot:3.0.3'
 	
+	// EhCache: https://search.maven.org/artifact/org.ehcache/ehcache/3.9.0/jar
+	implementation 'org.ehcache:ehcache:3.9.0'
+
+	// Javax Cache API: https://search.maven.org/artifact/javax.cache/cache-api/1.1.1/jar
+	implementation 'javax.cache:cache-api:1.1.1'
 }
 
 test {
