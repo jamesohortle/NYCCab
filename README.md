@@ -6,7 +6,7 @@ We will refer to it as `./` in the rest of the readme.
 
 I was developing and testing on MacOS 10.13.6.
 
-For ease's sake, I've put passwords etc in plaintext here. They are also in the source history, so you can see how I worked. Obviously I wouldn't do this in practice.
+For ease's sake, I've put passwords etc in plaintext here. They are also in the source history [fixed with BFG], so you can see how I worked. Obviously I wouldn't do this in practice.
 
 ## Set up the database
 1. Install MySQL 8.0.21.
@@ -47,7 +47,7 @@ python3 -m cabCLI -d yyyy-mm-dd -m med1 med2 ... medN
 1. If `--no_cache` is set anywhere in the command, the data will be requested fresh, with cached data for those medallion-date pairs evicted and recalculated before being returned.
 
 ## Issues
-1. The Springboot caching abstraction is in place (the annotations are there), but the Ehcache backend was too fiddly to get running in time. There is a branch `ehcache` that you can have a look at to get an idea of my progress.
+1. The Springboot caching abstraction is in place (the annotations are there), but the Ehcache backend was too fiddly to get running in time. There is a branch `ehcache` that you can have a look at to get an idea of my progress. [Done! ]
 1. Logging is pretty minimal, with simple `System.out.println()`s. 
 1. Currently the validation for inputs is pretty strict; things will simply fail or quit if dates aren't correctly formatted and only valid medallions will be processed. We would want to fail a bit more gracefully in reality.
 1. The CLI is simple but with a little effort could be made prettier and have a few more options.
