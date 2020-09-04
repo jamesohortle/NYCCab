@@ -1,8 +1,10 @@
 package com.example.NYCCab;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,16 @@ import java.util.regex.Matcher;
 @EnableCaching
 @RestController
 public class TripCountController {
+	
+	@Autowired
+	private Environment environment;
+	@GetMapping(value = "/clearCache")
+	public @ResponseBody Boolean clearCache() {
+		// TODO: prevent this method being called too often by users.
+		// Not good to keep deleting the entire cache.
+		evictAllTripCountsCache();
+		return true;
+	}
 	
 	@GetMapping(value = "/tripCount")
 	public @ResponseBody ArrayList<TripCount> tripCount(
@@ -99,17 +111,21 @@ public class TripCountController {
 	@Cacheable(value = "tripcounts", key="{#medallion, #date}")
 	private TripCount countTrips(String medallion, String date) {
 		
-		String url = "jdbc:mysql://localhost:3306/nyccab?serverTimezone=Australia/Sydney&useLegacyDatetimeCode=false";
-		String username = "root";
-		String password = "rootroot";
+		
+		String url = this.environment.getProperty("spring.data.mysql.database.url");
+		String user = this.environment.getProperty("spring.data.mysql.database.user");
+		String password = this.environment.getProperty("spring.data.mysql.database.password");
 		String query = String.format(
-				"SELECT COUNT(*) FROM cab_trip_data WHERE medallion = '%s' AND DATE(pickup_datetime) = '%s';",
+				"SELECT COUNT(*) FROM %s WHERE %s = '%s' AND DATE(%s) = '%s';",
+				this.environment.getProperty("spring.data.mysql.database.table"),
+				this.environment.getProperty("spring.data.mysql.database.table.medallion"),
 				medallion,
+				this.environment.getProperty("spring.data.mysql.database.table.pickupdatetime"),
 				date);
 		TripCount tc;
 		try (
 			// conn, stmt, result will autoclose.
-			Connection conn = DriverManager.getConnection(url, username, password);
+			Connection conn = DriverManager.getConnection(url, user, password);
 			Statement stmt = conn.createStatement();
 			ResultSet result = stmt.executeQuery(query);
 				
@@ -121,12 +137,14 @@ public class TripCountController {
 			} else {
 				tc = new TripCount(medallion, date, 0L);
 			}
-		} catch (SQLException e) {
-		    throw new IllegalStateException("Cannot connect to database!", e);
+		} catch (SQLException ex) {
+		    throw new IllegalStateException("Cannot connect to database!", ex);
 		}
 		return tc;
 	}
 	
+	@CacheEvict(value = "tripcounts", allEntries = true)
+	private void evictAllTripCountsCache() {}
 	
 	@CacheEvict(value = "tripcounts", key="{#medallion, #date}")
 	private void evictTripCountsCache(String medallion, String date) {}
